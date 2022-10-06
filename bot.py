@@ -20,7 +20,6 @@ def numbers(number):
     except:
         return complex(number.replace(' ', ''))
 
-
 def result(x, y, z):
     if z == '0':
         return x + y
@@ -30,20 +29,17 @@ def result(x, y, z):
         return x * y
     return x / y
 
-
-def start(update, context):
+def start(update, context): # старт 
     context.bot.send_message(update.effective_chat.id, f'Добро пожаловать! Я бот!❤️\n' 
                                                         'Я умею считать комплексные и рациональные числа!\n'
                                                         'Напиши 2 числа\n'
                                                        'Введите первое число: ')
-
     return NUMBERFIRST
 
 def numberFirst(update, context):
     global numberOne
     numberOne = numbers(update.message.text)
     context.bot.send_message(update.effective_chat.id, 'Отлично!\nВведите второе число: ')
-
     return NUMBERSECOND
 
 
@@ -52,8 +48,7 @@ def numberSecond(update, context):
     numberTwo = numbers(update.message.text)
     board = [[InlineKeyboardButton('+', callback_data='0'), InlineKeyboardButton('-', callback_data='1')],
              [InlineKeyboardButton('*', callback_data='2'), InlineKeyboardButton(':', callback_data='3')]]
-    update.message.reply_text('Выбери:', choice=InlineKeyboardMarkup(board))
-
+    update.message.reply_text('Выберите:', reply_markup=InlineKeyboardMarkup(board))
     return OPERATION
 
 
@@ -67,20 +62,19 @@ def operation(update, context):
     que.edit_message_text(text=f'Результат операции: {res}')
 
 
-def cancel(update, context):
+def cancel(update, context): # выход
     context.bot.send_message(update.effective_chat.id, 'До новых встреч!')
-
     return ConversationHandler.END
 
-start_handler = CommandHandler('start', start)
-cancel_handler = CommandHandler('cancel', cancel)
-num_one_handler = MessageHandler(Filters.text, numberFirst)
-num_two_handler = MessageHandler(Filters.text, numberSecond)
-oper_handler = CallbackQueryHandler(operation)
+start_handler = CommandHandler('start', start) # команда старт
+cancel_handler = CommandHandler('cancel', cancel) # команда выход
+numone_handler = MessageHandler(Filters.text, numberFirst) # первое число
+numtwo_handler = MessageHandler(Filters.text, numberSecond) # второе число
+oper_handler = CallbackQueryHandler(operation) # обработка операции
 conv_handler = ConversationHandler(entry_points=[start_handler],
                                    states={
-                                       NUMBERFIRST: [num_one_handler],
-                                       NUMBERSECOND: [num_two_handler],
+                                       NUMBERFIRST: [numone_handler],
+                                       NUMBERSECOND: [numtwo_handler],
                                        OPERATION: [oper_handler],
                                    },
                                    fallbacks=[cancel_handler])
